@@ -1,1 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS — Iframe Games</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000008;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        
+        /* Game container */
+        .game-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(60,0,120,0.15) 0%, transparent 70%);
+        }
+        
+        .game-iframe {
+            border: 1px solid rgba(124,58,237,0.2);
+            border-radius: 12px;
+            box-shadow: 0 0 60px rgba(124,58,237,0.2);
+            background: #000;
+            max-width: 100%;
+            max-height: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .game-iframe:hover {
+            border-color: rgba(124,58,237,0.5);
+            box-shadow: 0 0 80px rgba(124,58,237,0.3);
+        }
+        
+        /* Game info bar */
+        .game-info-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: rgba(6,5,17,0.95);
+            border-top: 1px solid rgba(124,58,237,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            backdrop-filter: blur(20px);
+            z-index: 100;
+        }
+        
+        .game-name {
+            color: #a89fc7;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            font-family: 'Fira Code', monospace;
+        }
+        
+        .game-controls {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .control-btn {
+            background: rgba(124,58,237,0.1);
+            border: 1px solid rgba(124,58,237,0.2);
+            color: #c084fc;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-family: 'Fira Code', monospace;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .control-btn:hover {
+            background: rgba(124,58,237,0.2);
+            border-color: rgba(124,58,237,0.4);
+            color: #f0eeff;
+        }
+        
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000008;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s;
+        }
+        
+        .loading-overlay.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-text {
+            color: #a78bfa;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            letter-spacing: 4px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-text">LOADING GAME<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
+    </div>
 
+    <!-- Game container -->
+    <div class="game-container">
+        <iframe 
+            class="game-iframe" 
+            id="game-area" 
+            src="https://tap-road.1games.io/?d" 
+            width="800" 
+            height="600" 
+            allow="autoplay; fullscreen; camera; focus-without-user-activation *; monetization; gamepad; keyboard-map *; xr-spatial-tracking; clipboard-write; web-share; accelerometer; magnetometer; gyroscope; display-capture" 
+            sandbox="allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-scripts allow-same-origin allow-downloads" 
+            scrolling="no" 
+            frameborder="0" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <!-- Game info bar -->
+    <div class="game-info-bar">
+        <div class="game-name">
+            <span>🎮 TAP ROAD</span>
+            <span style="color: #5f5680; margin-left: 8px;">// v1.0</span>
+        </div>
+        <div class="game-controls">
+            <button class="control-btn" onclick="toggleFullscreen()">
+                <span>⛶</span> FULLSCREEN
+            </button>
+            <a href="/games" class="control-btn">
+                <span>←</span> BACK TO GAMES
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Add loading animation
+        const style = document.createElement('style');
+        style.textContent = `
+            .dot {
+                display: inline-block;
+                animation: dotBlink 1.4s ease-in-out infinite;
+            }
+            .dot:nth-child(2) { animation-delay: 0.2s; }
+            .dot:nth-child(3) { animation-delay: 0.4s; }
+            @keyframes dotBlink {
+                0%, 80%, 100% { opacity: 0; }
+                40% { opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Hide loading overlay when iframe loads
+        const iframe = document.getElementById('game-area');
+        const overlay = document.getElementById('loadingOverlay');
+        
+        iframe.addEventListener('load', () => {
+            setTimeout(() => {
+                overlay.classList.add('fade-out');
+            }, 500);
+        });
+
+        // Fullscreen function
+        function toggleFullscreen() {
+            const iframe = document.getElementById('game-area');
+            if (iframe.requestFullscreen) {
+                iframe.requestFullscreen();
+            } else if (iframe.webkitRequestFullscreen) {
+                iframe.webkitRequestFullscreen();
+            } else if (iframe.msRequestFullscreen) {
+                iframe.msRequestFullscreen();
+            }
+        }
+
+        // Handle escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                // Optional: add any escape key behavior
+            }
+        });
+
+        // Get game name from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const gameName = urlParams.get('game') || 'TAP ROAD';
+        document.querySelector('.game-name span:first-child').textContent = `🎮 ${gameName.toUpperCase()}`;
+    </script>
+</body>
+</html>
