@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS — Iframe Games</title>
+    <title>NEXUS — Tap Road</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -11,12 +12,17 @@
             box-sizing: border-box;
         }
         
-        body {
+        html, body {
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
             background: #000008;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        
+        body {
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
-            font-family: 'Space Grotesk', sans-serif;
         }
         
         /* Game container */
@@ -25,40 +31,90 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(60,0,120,0.15) 0%, transparent 70%);
+            background: #000;
+            position: relative;
+        }
+        
+        .game-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .game-iframe {
-            border: 1px solid rgba(124,58,237,0.2);
-            border-radius: 12px;
-            box-shadow: 0 0 60px rgba(124,58,237,0.2);
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
             background: #000;
-            max-width: 100%;
-            max-height: 100%;
-            transition: all 0.3s ease;
         }
         
-        .game-iframe:hover {
-            border-color: rgba(124,58,237,0.5);
-            box-shadow: 0 0 80px rgba(124,58,237,0.3);
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000008;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-overlay.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-logo {
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: 12px;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(124,58,237,0.8);
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        .loading-text {
+            color: #a78bfa;
+            font-family: 'Fira Code', monospace;
+            font-size: 11px;
+            letter-spacing: 4px;
+        }
+        
+        .loading-text .dot {
+            display: inline-block;
+            animation: dotBlink 1.4s ease-in-out infinite;
+        }
+        
+        .loading-text .dot:nth-child(2) { animation-delay: 0.2s; }
+        .loading-text .dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes dotBlink {
+            0%, 80%, 100% { opacity: 0; }
+            40% { opacity: 1; }
         }
         
         /* Game info bar */
         .game-info-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
             height: 40px;
-            background: rgba(6,5,17,0.95);
+            background: rgba(6,5,17,0.98);
             border-top: 1px solid rgba(124,58,237,0.15);
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 20px;
             backdrop-filter: blur(20px);
-            z-index: 100;
+            flex-shrink: 0;
         }
         
         .game-name {
@@ -96,58 +152,65 @@
             color: #f0eeff;
         }
         
-        /* Loading overlay */
-        .loading-overlay {
-            position: fixed;
-            inset: 0;
-            background: #000008;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            transition: opacity 0.5s;
+        /* Error message */
+        .error-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #f87171;
+            display: none;
         }
         
-        .loading-overlay.fade-out {
-            opacity: 0;
-            pointer-events: none;
+        .error-message.show {
+            display: block;
         }
         
-        .loading-text {
-            color: #a78bfa;
-            font-family: 'Fira Code', monospace;
+        .error-message h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .error-message p {
+            color: #a89fc7;
             font-size: 12px;
-            letter-spacing: 4px;
-            animation: pulse 1.5s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 1; }
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Loading overlay -->
     <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-text">LOADING GAME<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
+        <div class="loading-logo">TAP ROAD</div>
+        <div class="loading-text">
+            LOADING GAME<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+        </div>
     </div>
 
     <!-- Game container -->
     <div class="game-container">
-        <iframe 
-            class="game-iframe" 
-            id="game-area" 
-            src="https://tap-road.1games.io/?d" 
-            width="800" 
-            height="600" 
-            allow="autoplay; fullscreen; camera; focus-without-user-activation *; monetization; gamepad; keyboard-map *; xr-spatial-tracking; clipboard-write; web-share; accelerometer; magnetometer; gyroscope; display-capture" 
-            sandbox="allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-scripts allow-same-origin allow-downloads" 
-            scrolling="no" 
-            frameborder="0" 
-            allowfullscreen>
-        </iframe>
+        <div class="game-wrapper">
+            <iframe 
+                class="game-iframe" 
+                id="game-area" 
+                src="https://tap-road.1games.io/?d" 
+                width="100%" 
+                height="100%" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; gamepad; fullscreen"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups allow-orientation-lock allow-pointer-lock allow-presentation allow-downloads"
+                scrolling="no" 
+                frameborder="0" 
+                allowfullscreen="true"
+                webkitallowfullscreen="true"
+                mozallowfullscreen="true">
+            </iframe>
+        </div>
+        
+        <!-- Error message (shown if iframe fails to load) -->
+        <div class="error-message" id="errorMessage">
+            <h3>⚠️ Game Loading Error</h3>
+            <p>Try refreshing the page or playing in fullscreen mode.</p>
+        </div>
     </div>
 
     <!-- Game info bar -->
@@ -160,62 +223,89 @@
             <button class="control-btn" onclick="toggleFullscreen()">
                 <span>⛶</span> FULLSCREEN
             </button>
-            <a href="/games" class="control-btn">
-                <span>←</span> BACK TO GAMES
+            <button class="control-btn" onclick="refreshGame()">
+                <span>↻</span> REFRESH
+            </button>
+            <a href="index.html" class="control-btn">
+                <span>←</span> BACK
             </a>
         </div>
     </div>
 
     <script>
-        // Add loading animation
-        const style = document.createElement('style');
-        style.textContent = `
-            .dot {
-                display: inline-block;
-                animation: dotBlink 1.4s ease-in-out infinite;
-            }
-            .dot:nth-child(2) { animation-delay: 0.2s; }
-            .dot:nth-child(3) { animation-delay: 0.4s; }
-            @keyframes dotBlink {
-                0%, 80%, 100% { opacity: 0; }
-                40% { opacity: 1; }
-            }
-        `;
-        document.head.appendChild(style);
-
-        // Hide loading overlay when iframe loads
         const iframe = document.getElementById('game-area');
         const overlay = document.getElementById('loadingOverlay');
+        const errorMsg = document.getElementById('errorMessage');
         
+        // Handle iframe load
         iframe.addEventListener('load', () => {
             setTimeout(() => {
                 overlay.classList.add('fade-out');
-            }, 500);
+            }, 1000);
         });
-
+        
+        // Handle iframe error
+        iframe.addEventListener('error', () => {
+            overlay.classList.add('fade-out');
+            errorMsg.classList.add('show');
+            console.log('Game failed to load - might be blocked by the game provider');
+        });
+        
+        // Fallback: hide overlay after 5 seconds even if game doesn't trigger load
+        setTimeout(() => {
+            if (!overlay.classList.contains('fade-out')) {
+                overlay.classList.add('fade-out');
+            }
+        }, 5000);
+        
         // Fullscreen function
         function toggleFullscreen() {
-            const iframe = document.getElementById('game-area');
-            if (iframe.requestFullscreen) {
-                iframe.requestFullscreen();
-            } else if (iframe.webkitRequestFullscreen) {
-                iframe.webkitRequestFullscreen();
-            } else if (iframe.msRequestFullscreen) {
-                iframe.msRequestFullscreen();
+            const elem = document.documentElement;
+            if (!document.fullscreenElement) {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
             }
         }
-
+        
+        // Refresh game
+        function refreshGame() {
+            overlay.classList.remove('fade-out');
+            errorMsg.classList.remove('show');
+            iframe.src = iframe.src;
+        }
+        
         // Handle escape key
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                // Optional: add any escape key behavior
+            if (e.key === 'Escape' && document.fullscreenElement) {
+                document.exitFullscreen();
             }
         });
-
-        // Get game name from URL parameters
+        
+        // Prevent right-click on iframe (optional)
+        iframe.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+        
+        // Get game name from URL parameters (if any)
         const urlParams = new URLSearchParams(window.location.search);
         const gameName = urlParams.get('game') || 'TAP ROAD';
         document.querySelector('.game-name span:first-child').textContent = `🎮 ${gameName.toUpperCase()}`;
+        
+        // Update page title
+        document.title = `NEXUS — ${gameName}`;
     </script>
 </body>
 </html>
