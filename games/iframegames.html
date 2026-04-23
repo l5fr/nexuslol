@@ -6,6 +6,7 @@
 <title>NEXUS — Games</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+  /* All your existing CSS remains exactly the same */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --bg: #000008;
@@ -78,7 +79,6 @@
   }
   @keyframes lsBar{0%{width:0}60%{width:72%}85%{width:91%}100%{width:100%}}
 
-  /* ── TOPBAR ── */
   .tbar {
     position:fixed; top:0; left:0; right:0; height:52px; z-index:100;
     background:rgba(6,5,17,0.92); border-bottom:1px solid rgba(124,58,237,0.12);
@@ -99,7 +99,6 @@
   }
   .back-btn:hover{border-color:rgba(167,139,250,0.4);color:var(--t1);background:var(--dim)}
 
-  /* ── CATEGORY BAR ── */
   .cat-bar-wrap {
     position: fixed;
     top: 52px;
@@ -166,7 +165,6 @@
     box-shadow: 0 0 8px var(--glow);
   }
 
-  /* Category icons */
   .cat-icon {
     font-size: 15px;
     line-height: 1;
@@ -214,7 +212,6 @@
     margin: 0 4px;
   }
 
-  /* ── PAGE ── */
   #page {
     position:relative; z-index:1;
     padding: 116px 28px 48px;
@@ -240,7 +237,6 @@
   .search-wrap input::placeholder{color:var(--t3)}
   .search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--t3);pointer-events:none}
 
-  /* Filter pill */
   .filter-pill {
     display: flex;
     align-items: center;
@@ -319,7 +315,6 @@
     position:relative;
   }
   
-  /* External badge */
   .external-badge {
     position: absolute;
     top: 8px;
@@ -355,7 +350,6 @@
   .no-results-icon{font-size:46px;opacity:.3}
   .no-results-txt{font-family:'Fira Code',monospace;font-size:10px;letter-spacing:3px;color:var(--t3)}
 
-  /* ── GAME MODAL ── */
   #gameModal{
     position:fixed;inset:0;z-index:500;
     background:rgba(2,1,10,0.97);
@@ -388,6 +382,84 @@
     .tbar{padding:0 12px}
     .cat-btn { padding: 0 10px; font-size: 11px; }
   }
+
+  /* Modal for game options */
+  .game-options-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,8,0.95);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+  }
+  .game-options-modal.show {
+    display: flex;
+  }
+  .options-container {
+    background: rgba(8,4,22,0.98);
+    border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 16px;
+    padding: 30px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 0 60px rgba(124,58,237,0.3);
+  }
+  .options-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--t1);
+    text-align: center;
+  }
+  .options-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .option-btn {
+    padding: 14px 20px;
+    border-radius: 10px;
+    border: 1px solid rgba(124,58,237,0.3);
+    background: rgba(124,58,237,0.1);
+    color: var(--t1);
+    font-family: 'Fira Code', monospace;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .option-btn:hover {
+    background: rgba(124,58,237,0.25);
+    border-color: var(--ac);
+    transform: scale(1.02);
+  }
+  .option-icon {
+    font-size: 24px;
+  }
+  .close-options {
+    margin-top: 20px;
+    padding: 10px;
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid rgba(239,68,68,0.3);
+    background: rgba(239,68,68,0.1);
+    color: #f87171;
+    font-family: 'Fira Code', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .close-options:hover {
+    background: rgba(239,68,68,0.2);
+  }
 </style>
 </head>
 <body>
@@ -401,7 +473,6 @@
   <div class="ls-bar"></div>
 </div>
 
-<!-- TOP NAV -->
 <div class="tbar" id="tbar">
   <div class="tbar-logo">NEXUS</div>
   <div class="tbar-tag">// games</div>
@@ -409,7 +480,6 @@
   <a href="/" class="back-btn">← home</a>
 </div>
 
-<!-- CATEGORY BAR -->
 <div class="cat-bar-wrap" id="catBarWrap">
   <div class="cat-bar" id="catBar">
     <button class="cat-btn active" data-cat="all" onclick="setCategory('all',this)">
@@ -527,7 +597,6 @@
   </div>
 </div>
 
-<!-- MAIN PAGE -->
 <div id="page">
   <div class="page-header">
     <div class="page-title">Games</div>
@@ -547,7 +616,6 @@
   </div>
 </div>
 
-<!-- GAME MODAL -->
 <div id="gameModal">
   <div class="gm-bar">
     <div class="gm-title" id="gmTitle">Game</div>
@@ -557,18 +625,39 @@
   <iframe id="gameFrame" src="" allowfullscreen allow="fullscreen; gamepad *"></iframe>
 </div>
 
+<!-- Game Options Modal -->
+<div class="game-options-modal" id="gameOptionsModal">
+  <div class="options-container">
+    <div class="options-title" id="optionsGameTitle">Tap Road</div>
+    <div class="options-buttons">
+      <button class="option-btn" onclick="playWithProxy()">
+        <span class="option-icon">🎮</span>
+        <span>Play with Proxy (Recommended)</span>
+      </button>
+      <button class="option-btn" onclick="openDirectLink()">
+        <span class="option-icon">🔗</span>
+        <span>Open Direct Link</span>
+      </button>
+      <button class="option-btn" onclick="searchAlternative()">
+        <span class="option-icon">🔍</span>
+        <span>Search for Alternative</span>
+      </button>
+    </div>
+    <button class="close-options" onclick="closeOptionsModal()">✕ Cancel</button>
+  </div>
+</div>
+
 <script>
-  // ── CONFIG ──────────────────────────────────────────────
-const GITHUB_USER   = 'l5fr';
-const GITHUB_REPO   = 'nexuslol';
-const GITHUB_FOLDER = 'games/gmes';
-const GITHUB_BRANCH = 'main';
-  // ────────────────────────────────────────────────────────
+  const GITHUB_USER   = 'l5fr';
+  const GITHUB_REPO   = 'nexuslol';
+  const GITHUB_FOLDER = 'games/gmes';
+  const GITHUB_BRANCH = 'main';
 
   const API_URL  = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${GITHUB_FOLDER}?ref=${GITHUB_BRANCH}`;
   const BASE_URL = `https://${GITHUB_USER}.github.io/${GITHUB_REPO}/${GITHUB_FOLDER}`;
 
-  // ── EXTERNAL GAMES (open in new tab) ───────────────────
+  let currentGame = null;
+
   const EXTERNAL_GAMES = [
     {
       title: 'Tap Road',
@@ -579,13 +668,11 @@ const GITHUB_BRANCH = 'main';
       category: 'casual'
     }
   ];
-  // ────────────────────────────────────────────────────────
 
   let ALL_GAMES = [];
   let currentCat = 'all';
   let currentSearch = '';
 
-  // ── Category keyword map ──
   const CAT_KEYWORDS = {
     clicker:   ['clicker','click','idle','tap','cookie'],
     io:        ['io','slither','agar','.io'],
@@ -614,12 +701,10 @@ const GITHUB_BRANCH = 'main';
           type: 'local'
         }));
       
-      // Combine external games with local games
       ALL_GAMES = [...EXTERNAL_GAMES, ...localGames];
       applyFilters();
     } catch (e) {
       console.log('Loading external games only due to error:', e);
-      // Still show external games even if GitHub API fails
       ALL_GAMES = [...EXTERNAL_GAMES];
       applyFilters();
     }
@@ -674,14 +759,14 @@ const GITHUB_BRANCH = 'main';
       card.onclick = () => openGame(g);
       card.innerHTML = `
         <div class="game-thumb">
-          ${g.type === 'external' ? '<div class="external-badge">↗ NEW TAB</div>' : ''}
+          ${g.type === 'external' ? '<div class="external-badge">↗ EXTERNAL</div>' : ''}
           <img src="${g.thumb}" alt="${g.title}" loading="lazy"
             onerror="this.closest('.game-thumb').outerHTML='<div class=\\'thumb-fallback\\'>🎮<div class=\\'thumb-overlay\\'style=\\'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);opacity:0;transition:opacity .2s\\'><div class=\\'play-circle\\'>▶</div></div></div>'">
           <div class="thumb-overlay"><div class="play-circle">▶</div></div>
         </div>
         <div class="game-info">
           <div class="game-title">${g.title}</div>
-          <button class="play-btn">${g.type === 'external' ? 'OPEN' : 'PLAY'}</button>
+          <button class="play-btn">${g.type === 'external' ? 'PLAY' : 'PLAY'}</button>
         </div>`;
       grid.appendChild(card);
     });
@@ -689,15 +774,41 @@ const GITHUB_BRANCH = 'main';
 
   function openGame(g) {
     if (g.type === 'external') {
-      // Open external games in a new tab
-      window.open(g.url, '_blank');
+      currentGame = g;
+      document.getElementById('optionsGameTitle').textContent = g.title;
+      document.getElementById('gameOptionsModal').classList.add('show');
     } else {
-      // Open local games in modal
       document.getElementById('gmTitle').textContent = g.title;
       document.getElementById('gameFrame').src = g.url;
       document.getElementById('gameModal').classList.add('on');
       document.body.style.overflow = 'hidden';
     }
+  }
+
+  function playWithProxy() {
+    if (!currentGame) return;
+    // Use a CORS proxy to try to load the game
+    const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(currentGame.url);
+    window.open(proxyUrl, '_blank');
+    closeOptionsModal();
+  }
+
+  function openDirectLink() {
+    if (!currentGame) return;
+    window.open(currentGame.url, '_blank');
+    closeOptionsModal();
+  }
+
+  function searchAlternative() {
+    if (!currentGame) return;
+    const searchQuery = encodeURIComponent(currentGame.title + ' online game');
+    window.open('https://www.google.com/search?q=' + searchQuery, '_blank');
+    closeOptionsModal();
+  }
+
+  function closeOptionsModal() {
+    document.getElementById('gameOptionsModal').classList.remove('show');
+    currentGame = null;
   }
   
   function closeGame() {
@@ -712,9 +823,20 @@ const GITHUB_BRANCH = 'main';
     else if (f.webkitRequestFullscreen) f.webkitRequestFullscreen();
   }
   
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGame(); });
+  document.addEventListener('keydown', e => { 
+    if (e.key === 'Escape') {
+      closeGame();
+      closeOptionsModal();
+    }
+  });
 
-  // Boot
+  // Close modal when clicking outside
+  document.getElementById('gameOptionsModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeOptionsModal();
+    }
+  });
+
   setTimeout(() => {
     const ls = document.getElementById('loadScreen');
     ls.classList.add('fade-out');
