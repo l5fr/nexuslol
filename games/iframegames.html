@@ -1,92 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXUS — Games</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  /* ALL YOUR EXISTING CSS REMAINS EXACTLY THE SAME - Not repeating for brevity */
-  /* Just add this one new style for the direct play button */
-  .direct-play-btn {
-    position: fixed;
-    bottom: 80px;
-    right: 20px;
-    z-index: 1000;
-    background: linear-gradient(135deg, #7c3aed, #9d5bf7);
-    border: 1px solid rgba(192,132,252,0.5);
-    color: white;
-    padding: 12px 20px;
-    border-radius: 50px;
-    font-family: 'Fira Code', monospace;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 20px rgba(124,58,237,0.5);
-    backdrop-filter: blur(10px);
-    transition: all 0.2s;
-    border: 1px solid rgba(192,132,252,0.3);
-    text-decoration: none;
-    display: inline-block;
-  }
-  .direct-play-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 30px rgba(124,58,237,0.7);
-  }
-</style>
-<!-- Rest of your CSS remains the same -->
-</head>
-<body>
-<!-- All your existing HTML remains the same until the script section -->
-
-<script>
-  // Replace the EXTERNAL_GAMES array with working games:
-  const EXTERNAL_GAMES = [
+// Replace the EXTERNAL_GAMES array with this:
+const EXTERNAL_GAMES = [
     {
-      title: 'Subway Surfers',
-      slug: 'subway-surfers',
-      thumb: 'https://img.gamedistribution.com/7c4513b5c8f14b5ab857cb7b0b7a5f1e-512x512.jpg',
-      url: 'https://html5.gamedistribution.com/7c4513b5c8f14b5ab857cb7b0b7a5f1e/?gd_sdk_referrer_url=https://gamedistribution.com/games/subway-surfers',
-      type: 'external',
-      category: 'adventure'
+        title: 'Tap Road',
+        slug: 'tap-road',
+        thumb: 'https://via.placeholder.com/190x107/7c3aed/ffffff?text=Tap+Road',
+        url: 'iframegames.html',  // Points to your local file
+        type: 'iframe',
+        category: 'casual'
     },
     {
-      title: 'Temple Run 2',
-      slug: 'temple-run-2',
-      thumb: 'https://img.gamedistribution.com/9f6e4b9c2d8b4a6e9c3f1a8d5b7e9c2d-512x512.jpg',
-      url: 'https://html5.gamedistribution.com/9f6e4b9c2d8b4a6e9c3f1a8d5b7e9c2d/?gd_sdk_referrer_url=https://gamedistribution.com/games/temple-run-2',
-      type: 'external',
-      category: 'adventure'
+        title: 'Drift Boss',
+        slug: 'drift-boss',
+        thumb: 'https://via.placeholder.com/190x107/f97316/ffffff?text=Drift+Boss',
+        url: 'https://www.crazygames.com/embed/drift-boss',
+        type: 'external',
+        category: 'car'
     }
-  ];
+];
 
-  // Simplified openGame function - just opens directly in new tab
-  function openGame(g) {
+// Update the openGame function:
+function openGame(g) {
     if (g.type === 'external') {
-      // Open directly in new tab - most reliable method
-      window.open(g.url, '_blank');
+        // For external embeddable games
+        document.getElementById('gmTitle').textContent = g.title;
+        document.getElementById('gameFrame').src = g.url;
+        document.getElementById('gameModal').classList.add('on');
+        document.body.style.overflow = 'hidden';
+    } else if (g.type === 'iframe') {
+        // For your local iframegames.html
+        document.getElementById('gmTitle').textContent = g.title;
+        document.getElementById('gameFrame').src = g.url;
+        document.getElementById('gameModal').classList.add('on');
+        document.body.style.overflow = 'hidden';
     } else {
-      document.getElementById('gmTitle').textContent = g.title;
-      document.getElementById('gameFrame').src = g.url;
-      document.getElementById('gameModal').classList.add('on');
-      document.body.style.overflow = 'hidden';
+        // For local games
+        document.getElementById('gmTitle').textContent = g.title;
+        document.getElementById('gameFrame').src = g.url;
+        document.getElementById('gameModal').classList.add('on');
+        document.body.style.overflow = 'hidden';
     }
-  }
-
-  // Add a floating button to play Tap Road directly
-  function addDirectGameButton() {
-    const btn = document.createElement('a');
-    btn.href = 'https://poki.com/en/g/tap-road';
-    btn.target = '_blank';
-    btn.className = 'direct-play-btn';
-    btn.innerHTML = '🎮 PLAY TAP ROAD (DIRECT LINK)';
-    document.body.appendChild(btn);
-  }
-
-  // Call this after page loads
-  setTimeout(addDirectGameButton, 3000);
-
-  // Rest of your JavaScript remains the same...
-</script>
-</body>
-</html>
+}
